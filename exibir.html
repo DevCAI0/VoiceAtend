@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes do Atendimento</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 250px;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        .content {
+            margin-left: 250px; /* Espaço para a sidebar */
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h4>Histórico</h4>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Setor</th>
+                </tr>
+            </thead>
+            <tbody id="historico">
+                <!-- Itens do histórico serão adicionados aqui -->
+            </tbody>
+        </table>
+    </div>
+    <div class="content">
+        <div class="container mt-5">
+            <h2>Detalhes do Atendimento</h2>
+            <h1 id="detalhes"></h1>
+            <button id="startButton" class="btn btn-primary">Iniciar</button>
+        </div>
+    </div>
+
+    <script>
+        let historico = []; // Armazenará o histórico
+        let timerRemocao; // Timer para a remoção de itens
+
+        document.getElementById('startButton').addEventListener('click', function() {
+    this.style.display = 'none'; // Esconde o botão após o clique
+    iniciarAplicacao(); // Inicia a aplicação
+});
+
+function falar(nome, setor) {
+    // Constrói a mensagem a ser falada corretamente
+    const texto = `${nome} comparecer ao ${setor}`;
+    const utterance = new SpeechSynthesisUtterance(texto);
+
+    utterance.onend = () => {
+        // Remover os dados do localStorage após a fala ser concluída
+        localStorage.removeItem("nome");
+        localStorage.removeItem("setor");
+        console.log("Fala concluída e dados removidos do localStorage.");
+        document.getElementById("detalhes").innerHTML = "Aguarde o próximo atendimento.";
+    };
+
+    speechSynthesis.speak(utterance);
+}
+
+
+
+
+function iniciarAplicacao() {
+    setInterval(atualizarDados, 5000); // Atualiza os dados a cada 5 segundos
+}
+
+function atualizarDados() {
+    const nome = localStorage.getItem("nome");
+    const setor = localStorage.getItem("setor");
+
+    if (nome && setor) {
+        document.getElementById("detalhes").innerHTML = `Nome: ${nome} <br> Setor: ${setor}`;
+
+        // Verifica se o item já existe no histórico para evitar duplicatas
+        const itemExiste = historico.some(item => item.nome === nome && item.setor === setor);
+        if (!itemExiste) {
+            // Adiciona a nova entrada ao histórico
+            historico.push({ nome, setor });
+            // Mantém apenas os últimos 5 itens no histórico
+            while (historico.length > 5) {
+                historico.shift();
+            }
+        }
+
+        // // Chama a função falar com os parâmetros corretos
+         falar(nome, setor);
+
+        // Atualiza a visualização do histórico a cada alteração
+        atualizarHistorico();
+    } else {
+        document.getElementById("detalhes").innerHTML = "Aguarde o próximo atendimento.";
+    }
+}
+
+// Chama atualizarDados inicialmente e a cada 5 segundos
+document.addEventListener('DOMContentLoaded', iniciarAplicacao);
+
+
+
+function atualizarHistorico() {
+    const tbody = document.getElementById("historico");
+    tbody.innerHTML = "";
+    historico.forEach(item => {
+        const tr = `<tr><td>${item.nome}</td><td>${item.setor}</td></tr>`;
+        tbody.innerHTML += tr;
+    });
+}
+
+function removerItensHistorico() {
+    if (historico.length > 0) {
+        historico.shift(); // Remove o primeiro item
+        atualizarHistorico();
+    }
+    if (historico.length > 0) {
+        timerRemocao = setTimeout(removerItensHistorico, 40000); // 40 segundos
+    }
+}
+
+
+        // Reinicia o timer de remoção
+    clearTimeout(timerRemocao);
+    timerRemocao = setTimeout(removerItensHistorico, 40000); // 40 segundos
+    </script>
+</body>
+</html>

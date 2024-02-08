@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulário de Atendimento</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Formulário de Atendimento</h2>
+        <form id="atendimentoForm">
+            <div class="form-group">
+                <label for="nome">Nome</label>
+                <input type="text" class="form-control" id="nome" required>
+            </div>
+            <div class="form-group">
+                <label for="setor">Setor</label>
+                <select class="form-control" id="setor">
+                    <option value="Setor Operacional">Setor Operacional</option>
+                    <option value="RH">RH</option>
+                    <option value="Psicologa">Psicóloga</option>
+                    <option value="Instrutor de Treinamento">Instrutor de Treinamento</option>
+                    <option value="Setor Comercial">Setor Comercial</option>
+                    <option value="SESMT">SESMT</option>
+                </select>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Enviar</button>
+            
+        </form>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
